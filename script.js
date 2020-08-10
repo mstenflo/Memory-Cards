@@ -14,20 +14,22 @@ let currentActiveCard = 0;
 
 const cardsEl = [];
 
-const cardsData = [
-  {
-    question: 'What must a variable begin with?',
-    answer: 'A letter, $ or _'
-  },
-  {
-    question: 'What is a variable?',
-    answer: 'Container for a piece of data'
-  },
-  {
-    question: 'Example of Case Sensitive Variable',
-    answer: 'thisIsAVariable'
-  }
-];
+const cardsData = getCardsData();
+
+// const cardsData = [
+//   {
+//     question: 'What must a variable begin with?',
+//     answer: 'A letter, $ or _'
+//   },
+//   {
+//     question: 'What is a variable?',
+//     answer: 'Container for a piece of data'
+//   },
+//   {
+//     question: 'Example of Case Sensitive Variable',
+//     answer: 'thisIsAVariable'
+//   }
+// ];
 
 function createCards() {
   cardsData.forEach((data, index) => createCard(data, index));
@@ -69,6 +71,16 @@ function udpateCurrentText() {
   currentEl.innerText = `${currentActiveCard + 1}/${cardsEl.length}`;
 }
 
+function getCardsData() {
+  const cards = JSON.parse(localStorage.getItem('cards'));
+  return cards === null ? [] : cards;
+}
+
+function setCardsData(cards) {
+  localStorage.setItem('cards', JSON.stringify(cards));
+  window.location.reload();
+}
+
 createCards();
 
 nextBtn.addEventListener('click', () => {
@@ -98,3 +110,32 @@ prevBtn.addEventListener('click', () => {
 
   udpateCurrentText();
 });
+
+showBtn.addEventListener('click', () => addContainer.classList.add('show'));
+
+hideBtn.addEventListener('click', () => addContainer.classList.remove('show'));
+
+addCardBtn.addEventListener('click', () => {
+  const question = questionEl.value;
+  const answer = answerEl.value;
+
+  if (question.trim() && answer.trim()) {
+    const newCard = { question, answer };
+
+    createCard(newCard);
+
+    questionEl.value = '';
+    answerEl.value = '';
+
+    addContainer.classList.remove('show');
+
+    cardsData.push(newCard);
+    setCardsData(cardsData);
+  }
+});
+
+clearBtn.addEventListener('click', () => {
+  localStorage.clear();
+  cardsContainer.innerHTML = '';
+  window.location.reload();
+})
